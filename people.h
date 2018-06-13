@@ -93,7 +93,8 @@ public:
 	void change_position();
 	void change_income(int);
 	void change_salary(int);
-	void promotion(string, int, int);
+	void promotion(string, int);
+	void rise(int);
 
 	friend ostream& operator << (ostream& out, Work& );
 };
@@ -155,12 +156,18 @@ void Work :: change_income(int inc)
     income = inc;
 }
 
-void Work :: promotion(string tit, int sal, int inc)
+void Work :: promotion(string tit, int sal)
 {
     change_job_title(tit);
     change_position();
+    change_income(income + (sal-salary)/3*4);
     change_salary(sal);
-    change_income(inc);
+}
+
+void Work :: rise(int ri)
+{
+    change_income(income+(ri-salary)/3*4);
+    change_salary(ri);
 }
 
 string Work :: show()
@@ -213,6 +220,7 @@ class Employee: public Person, public Work
 public:
 	Employee(string , string , gender , int , string , position , int , int );
 	string show();
+	void change(Employee);
 
 	friend ostream& operator << (ostream& out, Employee& );
     friend bool operator ==( const Employee &, const Employee & );
@@ -233,7 +241,17 @@ string Employee :: show()
 
     return o;
 }
-
+void Employee :: change(Employee emp)
+{
+    name = emp.name;
+	surname = emp.surname;
+	sex = emp.sex;
+	age = emp.age;
+    job_title = emp.job_title;
+	job = emp.job;
+	salary = emp.salary;
+	income = emp.income;
+}
 bool operator ==( const Employee& l , const Employee& r )
 {
     if(l.name == r.name && l.surname == r.surname && l.age == r.age && l.sex == r.sex && l.job_title == r.job_title && l.job == r.job && l.salary == r.salary && l.income == r.income)
@@ -273,13 +291,26 @@ protected:
 	string branch_name;
     vector <Employee> workers;
 public:
+    Branch();
 	Branch(string);
 	void add_worker(Employee);
-	void fire_worker(Employee);
-	void promote_worker(Employee, string, int, int);
+	void fire_worker(int);
+	void promote_worker(int , string, int);
+	void give_rise(int, int);
+	void change(Branch);
+	int get_income();
+	int get_outflow();
+	int get_size();
+	string get_name();
 	//void move_worker(Employee);
 	friend ostream& operator<< (ostream& , Branch& );
+	//friend Branch & operator =( const Branch& &, Branch& );
 };
+
+Branch :: Branch()
+{
+    branch_name = "";
+}
 
 Branch :: Branch(string na)
 {
@@ -291,36 +322,243 @@ void Branch :: add_worker(Employee emp)
     workers.push_back(emp);
 }
 
-void Branch :: fire_worker(Employee emp)
+void Branch :: fire_worker(int n)
 {
-    for(int i = 0; i < workers.size(); i++)
+
+    workers.erase(workers.begin() + (n-1));
+    /*for(int i = 0; i < workers.size(); i++)
     {
         if(emp == workers[i])
         {
             workers.erase(workers.begin() + i);
             break;
         }
-    }
+    }*/
 }
 
-void Branch :: promote_worker(Employee emp, string job_title, int salary, int income)
+void Branch :: promote_worker(int n, string job_title, int salary)
 {
-    for(int i = 0; i < workers.size(); i++)
+    workers[n-1].promotion(job_title, salary);
+    /*for(int i = 0; i < workers.size(); i++)
     {
         if(emp == workers[i])
         {
-            workers[i].promotion(job_title, salary, income);
+            workers[i].promotion(job_title, salary);
             break;
         }
+    }*/
+}
+
+void Branch :: give_rise(int n, int ri)
+{
+    workers[n-1].rise(ri);
+    /*for(int i = 0; i < workers.size(); i++)
+    {
+        if(emp == workers[i])
+        {
+            workers[i].rise(ri);
+            break;
+        }
+    }*/
+
+}
+
+int Branch :: get_income()
+{
+    int inc = 0;
+    for(int i = 0; i < workers.size(); i++)
+    {
+        inc += workers[i].get_income();
+    }
+
+    return inc;
+}
+
+int Branch :: get_outflow()
+{
+    int ou = 0;
+    for(int i = 0; i < workers.size(); i++)
+    {
+        ou += workers[i].get_salary();
+    }
+
+    return ou;
+}
+
+int Branch :: get_size()
+{
+    return workers.size();
+}
+
+string Branch :: get_name()
+{
+    return branch_name;
+}
+
+void Branch :: change(Branch br)
+{
+    branch_name = br.branch_name;
+    workers.clear();
+    for(int i = 0; i < br.workers.size(); i++)
+    {
+        workers.push_back(br.workers[i]);
     }
 }
 
 ostream& operator<< (ostream& out, Branch& bra)
 {
-    out<<bra.branch_name<<"\n";
+    out<<bra.branch_name<<"\n\t   "<<bra.get_size()<<"\n";
     for(int i = 0; i < bra.workers.size(); i++)
     {
-        out<<i+1<<". "<<bra.workers[i]<<"\n";
+        out<<"\t\t"<<i+1<<". "<<bra.workers[i]<<"\n";
+    }
+    return out;
+}
+
+/*Branch & operator =( Branch& l , const Branch & r)
+{
+    l.branch_name = r.branch_name;
+    l.workers.clear();
+    for(int i = 0; i < r.workers.size(); i++)
+    {
+        l.workers.push_back(r.workers[i]);
+    }
+}*/
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Company
+{
+protected:
+    string name;
+    int money;
+    int income;
+    int outflow;
+    vector<Branch> branches;
+
+    void update_income();
+    void update_outflow();
+    void update_money();
+
+public:
+    Company();
+    Company(string , int);
+    void add_branch(Branch);
+    void add_worker(int, Employee);
+    void change(string, int);
+    int show_money();
+    int show_income();
+    int show_outflow();
+    Branch return_branch(int);
+    string show_report();
+    int get_size();
+
+    void end_of_month();
+
+    friend ostream& operator << (ostream& out, Company& );
+};
+
+Company :: Company()
+{
+    name = "";
+    money = 0;
+    income = 0;
+    outflow = 0;
+}
+Company :: Company(string n = "Firma", int m = 100000)
+{
+    name = n;
+    money = m;
+    income = 0;
+    outflow = 0;
+}
+
+void Company :: update_income()
+{
+    int in = 0;
+
+    for(int i = 0; i < branches.size(); i++)
+    {
+        in += branches[i].get_income();
+    }
+
+    income = in;
+}
+
+void Company :: update_outflow()
+{
+    int ou = 0;
+    for(int i = 0; i < branches.size(); i++)
+    {
+        ou += branches[i].get_outflow();
+    }
+
+    outflow = ou;
+}
+
+void Company :: update_money()
+{
+    money += income - outflow;
+}
+
+void Company :: add_branch(Branch br)
+{
+    branches.push_back(br);
+}
+
+void Company :: add_worker(int b, Employee emp)
+{
+    branches[b-1].add_worker(emp);
+}
+
+void Company :: change(string na, int mon)
+{
+    name = na;
+    money = mon;
+    income = 0;
+    outflow = 0;
+}
+int Company :: show_money()
+{
+    return money;
+}
+
+int Company :: show_income()
+{
+    return income;
+}
+
+int Company :: show_outflow()
+{
+    return outflow;
+}
+
+void Company :: end_of_month()
+{
+    update_income();
+    update_outflow();
+    update_money();
+}
+
+int Company :: get_size()
+{
+    return branches.size();
+}
+
+Branch Company :: return_branch(int b)
+{
+    return branches[b-1];
+}
+
+ostream& operator << (ostream& out, Company& com)
+{
+    out<<com.name<<"\n"<<com.show_money()<<"\n"<<com.get_size()<<"\n";
+    for(int i = 0; i < com.get_size(); i++)
+    {
+
+        out<<"\t"<<i+1<<". "<<com.branches[i];
     }
     return out;
 }
