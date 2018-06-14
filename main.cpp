@@ -14,7 +14,7 @@ void system();
 void system_dzial(int x);
 void system_pracownik(int x, int y);
 void lista_dzialow();
-//void wczytaj_pracownika();
+void wczytaj_pracownika(int x);
 int sprawdz(int a, int b, int z);
 
 int main()
@@ -155,11 +155,16 @@ void system_dzial(int x)
         switch(z)
         {
         case 1:
+            br = firma.return_branch(x);
             cout<<br<<"\n";
             printf("Wybierz pracownika poprzez wpisanie jego numeru do konsoli\n");
             cin>>y;
             y = sprawdz(1, br.get_size(), y);
             system_pracownik(x, y);
+            break;
+
+        case 2:
+            wczytaj_pracownika(x);
             break;
         }
 
@@ -171,22 +176,47 @@ void system_dzial(int x)
 void system_pracownik(int x, int y)
 {
     int z = 1;
+    string pozy;
+    int wyp;
 
     while(z != 0)
     {
         printf("SYSTEM ZARZADZANIA PRACOWNIKIEM\n\n");
-        printf("[1] Awansuj\n");
-        printf("[2] Daj podwyzke\n");
-        printf("[3] Zwolnij\n");
+        printf("\t[1] Awansuj\n");
+        printf("\t[2] Daj podwyzke\n");
+        printf("\t[3] Zwolnij\n");
         printf("\n\n");
-        printf("[0] Wroc");
+        printf("\t[0] Wroc\n\n");
+
+        cin>>z;
+        z = sprawdz(0, 3, z);
+        printf("\n\n");
 
         switch(z)
         {
         case 1:
+            printf("Podaj wysokosc wyplaty\n");
+            cin>>wyp;
+            printf("Podaj nowe stanowisko\n");
+            getline(cin, pozy);
+            getline(cin, pozy);
 
+            firma.promote_worker(x, y, pozy, wyp);
+            break;
+
+        case 2:
+            printf("Podaj wysokosc wyplaty\n");
+            cin>>wyp;
+
+            firma.rise_worker(x, y, wyp);
+            break;
+
+        case 3:
+            firma.fire_worker(x, y);
+            break;
         }
 
+        printf("\n\n");
     }
 }
 
@@ -212,13 +242,53 @@ int sprawdz(int a, int b, int z)
     return z;
 }
 
-/*void wczytaj_pracownika()
+void wczytaj_pracownika(int x)
 {
     string n, s, g, st, po;
     int a, wy, prz;
 
-    printf("Wpisz info")
-}*/
+    gender gend;
+    position pos;
+
+    printf("Wpisz informacje o pracowniku\n");
+    printf("Imie Nazwisko plec wiek stanowisko pozycje wyplate przychod\n");
+    cin>>s>>n>>g>>a>>st>>po>>wy>>prz;
+
+    if(g[0] == 'm')
+    {
+        gend = mezczyzna;
+    }
+    else
+    {
+        gend = kobieta;
+    }
+
+    if(po[0] == 'k')
+    {
+        pos = kierownik;
+    }
+    else if( po[0] == 's')
+    {
+        pos = stazysta;
+    }
+    else
+    {
+        if(po[2] == 'e')
+        {
+            pos = prezes;
+        }
+        else if(po[3] == 'c')
+        {
+            pos = pracownik;
+        }
+        else
+        {
+            pos = praktykant;
+        }
+    }
+    Employee emp(n, s, gend, a, st, pos, wy, prz);
+    firma.add_worker(x, emp);
+}
 
 void wczytaj_firme()
 {

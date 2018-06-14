@@ -158,6 +158,8 @@ void Work :: change_income(int inc)
 
 void Work :: promotion(string tit, int sal)
 {
+    cout<<"SIAM";
+    //job_title = tit;
     change_job_title(tit);
     change_position();
     change_income(income + (sal-salary)/3*4);
@@ -338,6 +340,7 @@ void Branch :: fire_worker(int n)
 
 void Branch :: promote_worker(int n, string job_title, int salary)
 {
+    cout<<"TAM";
     workers[n-1].promotion(job_title, salary);
     /*for(int i = 0; i < workers.size(); i++)
     {
@@ -448,13 +451,18 @@ public:
     void add_branch(Branch);
     void add_worker(int, Employee);
     void change(string, int);
+    void promote_worker(int, int, string, int);
+    void fire_worker(int, int);
+    void rise_worker(int, int, int);
     int show_money();
     int show_income();
     int show_outflow();
     Branch return_branch(int);
     string show_report();
     int get_size();
-
+    //void fire_worker(int);
+	//void promote_worker(int , string, int);
+	//void give_rise(int, int);
     void end_of_month();
 
     friend ostream& operator << (ostream& out, Company& );
@@ -520,6 +528,24 @@ void Company :: change(string na, int mon)
     income = 0;
     outflow = 0;
 }
+
+void Company :: promote_worker(int b, int e, string tit, int r)
+{
+    cout<<"tu";
+    branches[b-1].promote_worker(e, tit, r);
+
+}
+
+void Company :: fire_worker(int b, int e)
+{
+    branches[b-1].fire_worker(e);
+}
+
+void Company :: rise_worker(int b, int e, int r)
+{
+    branches[b-1].give_rise(e, r);
+}
+
 int Company :: show_money()
 {
     return money;
