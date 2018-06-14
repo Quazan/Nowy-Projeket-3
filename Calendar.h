@@ -46,8 +46,12 @@ public:
 
     Date(int, int, int);
     string get_date();
+    int get_day();
+    int get_month();
+    int get_year();
     void next_day();
     void next_week();
+    void change(int, int, int);
     friend ostream& operator<< (ostream& , const Date& );
 };
 
@@ -57,6 +61,21 @@ Date :: Date(int d = 1, int m = 1, int y = 2018)
     month = m;
     year = y;
     //Rzucanie wyjatku jak zla data
+}
+
+int Date :: get_day()
+{
+    return day;
+}
+
+int Date :: get_month()
+{
+    return month;
+}
+
+int Date :: get_year()
+{
+    return year;
 }
 
 void Date :: next_day()
@@ -83,6 +102,27 @@ void Date :: next_week()
     }
 }
 
+void Date :: change(int d, int m, int y)
+{
+    day = d;
+    month = m;
+    year = y;
+}
+
+string Date :: get_date()
+{
+    string o;
+
+    if(day >= 10) o += to_string(day);
+    else o += "0" + to_string(day);
+    o += ".";
+    if(month >= 10) o += to_string(month);
+    else o += "0" + to_string(month);
+    o += "." + to_string(year);
+
+        return o;
+}
+
 ostream& operator << (ostream& out, const Date & da)
 {
     int day = da.day;
@@ -98,3 +138,5 @@ ostream& operator << (ostream& out, const Date & da)
 
     return out;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

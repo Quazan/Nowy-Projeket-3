@@ -8,13 +8,16 @@ using namespace std;
 Company firma("");
 Date data(1, 1, 2018);
 
-void wczytaj_firme();
+void wczytaj_firme(string nazwa);
 void menu();
 void system();
 void system_dzial(int x);
 void system_pracownik(int x, int y);
 void lista_dzialow();
+void wypisz_raport();
 void wczytaj_pracownika(int x);
+void zapisz_raport();
+void zapisz_firme(string nazwa);
 int sprawdz(int a, int b, int z);
 
 int main()
@@ -61,9 +64,9 @@ void menu()
     string nazwa_pliku;
     //int z = 1;
 
-    cout<<"\t"<<"Podaj nazwe pliku"<<"\n";
+    cout<<"\t"<<"Podaj nazwe pliku z firma"<<"\n";
     cin>>nazwa_pliku;
-    wczytaj_firme(/*nazwa_pliku*/);
+    wczytaj_firme(nazwa_pliku);
     system();
 
     /*while(z != 0)
@@ -105,12 +108,13 @@ void system()
         printf("\t[1] Wyswietl liste dzialow\n");
         printf("\t[2] Wybierz dzial\n");
         printf("\t[3] Wyswietl stan firmy\n");
+        printf("\t[4] Zapisz firme\n");
         printf("\n");
-        printf("\t[4] Nastepny dzien\n");
+        printf("\t[5] Nastepny dzien\n");
         printf("\n\n");
         printf("\t[0] Zakoncz\n\n");
         cin>>z;
-        z = sprawdz(0, 7, z);
+        z = sprawdz(0, 5, z);
         cout<<"\n\n";
 
         switch(z)
@@ -127,10 +131,58 @@ void system()
             q = sprawdz(1, firma.get_size(), q);
             system_dzial(q);
             break;
+
+        case 3:
+            int w;
+            printf("STAN FIRMY ");
+            cout<<data<<"\n\n";
+            wypisz_raport();
+
+            printf("\n\n");
+            printf("Czy chcesz zapisac stan firmy? [1/0]\n");
+
+            cin>>w;
+            w = sprawdz(0, 1, w);
+
+            if(w == 1)
+            {
+                zapisz_raport();
+            }
+            break;
+
+        case 4:
+            {
+                string s;
+                printf("Podaj nazwe pliku do zapisu\n");
+                cin>>s;
+                zapisz_firme(s);
+                break;
+            }
+
+        case 5:
+            data.next_day();
+            if(data.get_day() == 10)
+            {
+                int w;
+                printf("RAPORT NA KONIEC MIESIACA\n\n");
+                wypisz_raport();
+
+                printf("\n\n");
+                printf("Czy chcesz zapisac stan firmy? [1/0]\n");
+
+                cin>>w;
+                w = sprawdz(0, 1, w);
+
+                if(w == 1)
+                {
+                zapisz_raport();
+                }
+
+            }
+            break;
         }
         cout<<"\n\n";
     }
-
 }
 
 void system_dzial(int x)
@@ -166,11 +218,18 @@ void system_dzial(int x)
         case 2:
             wczytaj_pracownika(x);
             break;
+        case 3:
+            printf("Ilosc pracownikow\t%d\n", br.get_size());
+            printf("Przychody:\t\t%d zl\n", br.get_income());
+            printf("Straty:\t\t\t%d zl\n", br.get_outflow());
+            printf("Bilans:\t\t\t%d zl\n", br.get_income()-br.get_outflow());
+            printf("\n");
+            break;
         }
 
         cout<<"\n\n";
+        br = firma.return_branch(x);
     }
-
 }
 
 void system_pracownik(int x, int y)
@@ -229,6 +288,42 @@ void lista_dzialow()
         br = firma.return_branch(i);
         cout<<"\t"<<i<<". "<<br.get_name()<<"\n";
     }
+}
+
+void wypisz_raport()
+{
+    printf("Stan konta firmy:\t%d\n", firma.show_money());
+    printf("Miesieczne przychody:\t%d\n", firma.show_income());
+    printf("Miesieczne wydatki:\t%d\n", firma.show_outflow());
+    printf("Bilans:\t\t\t%d\n", firma.show_income()-firma.show_outflow());
+    printf("Liczba dzialow: \t%d\n", firma.get_size());
+    printf("Liczba pracownikow:\t%d\n", firma.get_workers_size());
+}
+
+void zapisz_raport()
+{
+    string d;
+    d = data.get_date();
+    std::fstream plik;
+
+    plik.open("Raport " +d + ".txt", std::ios::out);
+    plik <<"STAN FIRMY\n\n";
+    plik<<"Stan konta firmy:\t"<<firma.show_money()<<"\n";
+    plik<<"Miesieczne przychody:\t"<<firma.show_income()<<"\n";
+    plik<<"Miesieczne wydatki:\t"<<firma.show_outflow()<<"\n";
+    plik<<"Bilans:\t\t\t"<<firma.show_income()-firma.show_outflow()<<"\n";
+    plik<<"Liczba dzialow: \t"<<firma.get_size()<<"\n";
+    plik<<"Liczba pracownikow:\t"<<firma.get_workers_size()<<"\n";
+    plik.close();
+}
+
+void zapisz_firme(string nazwa_pliku)
+{
+    std::fstream plik;
+    plik.open(nazwa_pliku + ".txt", std::ios::out);
+    plik<<data<<"\n";
+    plik<<firma;
+    plik.close();
 }
 
 int sprawdz(int a, int b, int z)
@@ -290,9 +385,8 @@ void wczytaj_pracownika(int x)
     firma.add_worker(x, emp);
 }
 
-void wczytaj_firme()
+void wczytaj_firme(string nazwa_pliku)
 {
-    string nazwa_pliku;
 	string nazwa_firmy;
 	string nazwa_oddzialu;
 	gender gend;
@@ -307,7 +401,7 @@ void wczytaj_firme()
 	char z;
 
 	std::ifstream plik;
-    plik.open("1.txt" );
+    plik.open(nazwa_pliku + ".txt" );
     plik>>a>>z>>b>>z>>c;
 
 	//Date date(a, b, c);

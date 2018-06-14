@@ -460,6 +460,7 @@ public:
     Branch return_branch(int);
     string show_report();
     int get_size();
+    int get_workers_size();
     //void fire_worker(int);
 	//void promote_worker(int , string, int);
 	//void give_rise(int, int);
@@ -548,16 +549,19 @@ void Company :: rise_worker(int b, int e, int r)
 
 int Company :: show_money()
 {
+    update_money();
     return money;
 }
 
 int Company :: show_income()
 {
+    update_income();
     return income;
 }
 
 int Company :: show_outflow()
 {
+    update_outflow();
     return outflow;
 }
 
@@ -571,6 +575,18 @@ void Company :: end_of_month()
 int Company :: get_size()
 {
     return branches.size();
+}
+
+int Company :: get_workers_size()
+{
+    int sum = 0;
+
+    for(int i = 0; i < branches.size(); i++)
+    {
+        sum += branches[i].get_size();
+    }
+
+    return sum;
 }
 
 Branch Company :: return_branch(int b)
