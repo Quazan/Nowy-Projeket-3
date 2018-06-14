@@ -34,8 +34,14 @@ int days_in_month(int m, int y)
         }
     }
 }
+class Time
+{
+public:
+    virtual string show() = 0;
+};
 
-class Date
+
+class Date :public Time
 {
 protected:
     int day;
@@ -52,6 +58,10 @@ public:
     void next_day();
     void next_week();
     void change(int, int, int);
+    virtual string show()
+    {
+        return get_date();
+    }
     friend ostream& operator<< (ostream& , const Date& );
 };
 
@@ -60,7 +70,6 @@ Date :: Date(int d = 1, int m = 1, int y = 2018)
     day = d;
     month = m;
     year = y;
-    //Rzucanie wyjatku jak zla data
 }
 
 int Date :: get_day()

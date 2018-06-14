@@ -1,0 +1,33 @@
+14.06.2018
+Multi Packaging Solutions
+20000000
+5
+	1. HR
+	   2
+		1. Lucjan Czarnecki mezczyzna 30 Rozwoj kierownik 7000 10000
+		2. Jowita Tomaszewska kobieta 48 Szkoleniowiec pracownik 5000 6000
+	2. IT
+	   4
+		1. Rafal Majewski mezczyzna 40 Senior kierownik 9000 12000
+		2. Szczepan Wysocki mezczyzna 35 Developer pracownik 7000 9000
+		3. Marzena Zajac kobieta 28 Junior pracownik 4000 5000
+		4. Jerzy Sokolowski mezczyzna 23 Junior stazysta 2000 1000
+	3. PR
+	   3
+		1. Augustyn Jasinski mezczyzna 42 Menager kierownik 8000 8000
+		2. Marcelina Duda kobieta 38 Menager pracownik 5000 6000
+		3. Halina Walczak kobieta 25 Menager praktykant 1500 200
+	4. Dzial jakosci
+	   3
+		1. Karina Rutkowska kobieta 44 Leader kierownik 8000 12000
+		2. Adrianna Kaminska kobieta 38 Kontroler pracownik 5000 6500
+		3. Miros³awa Michalska kobieta 35 Audytor pracownik 5500 7000
+	5. Produkcja
+	7
+		1. Zdzislaw Jaworski mezczyzna 45 Kadra kierownik 10000 12000
+		2. Dorofiej Michalski mezczyzna 37 Leader pracownik 7000 9000
+		3. Natasza Wysocka kobieta 34 Specjalista pracownik 6500 8000
+		4. Wiktor Adamski mezczyzna 40 Specjalista pracownik 7000 7500
+		5. Krystian Nowak mezczyzna 43 Wsparcie pracownik 5000 6000
+		6. Kasper Wozniak mezczyzna 38 Fizyczny pracownik 3500 3000
+		7. Asia Zajac kobieta 35 Fizyczny pracownik 2500 1500

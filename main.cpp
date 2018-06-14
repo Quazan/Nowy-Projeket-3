@@ -1,6 +1,5 @@
-#include "people.h"
+#include "Company.h"
 #include "Calendar.h"
-//#include "branch.h"
 #include <fstream>
 #include <bits/stdc++.h>
 using namespace std;
@@ -8,6 +7,8 @@ using namespace std;
 Company firma("");
 Date data(1, 1, 2018);
 
+Time *ti;
+Area *obszar;
 void wczytaj_firme(string nazwa);
 void menu();
 void system();
@@ -22,79 +23,26 @@ int sprawdz(int a, int b, int z);
 
 int main()
 {
-    //Company firma();
-/*
-	//gender se = male;
-	Employee a("Jan", "Kowalski", mezczyzna, 32, "IT", pracownik, 3200, 4000);
-	Employee x("Jana", "Kowalski", mezczyzna, 32, "IT", pracownik, 3200, 4000);
-	//if(a!=x) cout<<"TAK CHUJU";
-		//Person a("Jan", "Kowalski", mezczyzna, 32);
-	//class Date d(28,12,2018);
-    //a.change_position();
-    //a.change_job_title("PR");
-    //a.change_salary(4000);
-    //a.change_income(5000);
-	Branch b("Szlachta nie pracuje");
-	b.add_worker(a);
-    b.add_worker(x);
-	//b.fire_worker(x);
-	b.give_rise(a, 5000);
-	//cout<<d<<"\n"<<a<<"\n"<<a.get_income() <<" "<<a.get_salary();
-	//cout<<b.get_income() <<" "<<b.get_outflow()<<"\n"<<b<<"\n";
-
-	Company xxx("Tristram", 100);
-    //Branch c;
-	xxx.add_branch(b);
-	//xxx.add_worker(1, x);
-    //c = xxx.return_branch(1);
-	cout<<xxx;
-    //Branch c;
-    //c.change(b);
-    //x.change(a);
-    //cout<<x;
-*/
-
-    //wczytaj_firme();
     menu();
-    //cout<<data;
 }
 
 void menu()
 {
     string nazwa_pliku;
-    //int z = 1;
 
     cout<<"\t"<<"Podaj nazwe pliku z firma"<<"\n";
     cin>>nazwa_pliku;
-    wczytaj_firme(nazwa_pliku);
-    system();
-
-    /*while(z != 0)
+    try
     {
-        printf("[1] Wczytaj firme z pliku\n");
-        printf("\n\n\n");
-        printf("[0] Zakoncz\n");
-        cin>>z;
-        z = sprawdz(0, 1, z);
-        /*while(z < 0 || z > 1)
-        {
-            printf("\tWpisz poprawny numer operacji");
-            cin>>z;
-        }*/
-    /*
-        switch(z)
-        {
-        case 1:
-            cout<<"\t"<<"Podaj nazwe pliku"<<"\n";
-            cin>>nazwa_pliku;
-            wczytaj_firme(/*nazwa_pliku);
-            system();
-            break;
-
-        case 0:
-            break;
-        }
-    }*/
+        wczytaj_firme(nazwa_pliku);
+    }
+    catch(string w)
+    {
+        cout<<w<<"\n";
+        menu();
+        return;
+    }
+    system();
 }
 
 void system()
@@ -128,7 +76,8 @@ void system()
             lista_dzialow();
             printf("\n Wybierz dzial poprzez wpisanie jego numeru do konsoli\n");
             cin>>q;
-            q = sprawdz(1, firma.get_size(), q);
+            obszar = &firma;
+            q = sprawdz(1, obszar -> get_size(), q);
             system_dzial(q);
             break;
 
@@ -165,6 +114,7 @@ void system()
             {
                 int w;
                 printf("RAPORT NA KONIEC MIESIACA\n\n");
+                firma.end_of_month();
                 wypisz_raport();
 
                 printf("\n\n");
@@ -179,6 +129,22 @@ void system()
                 }
 
             }
+            break;
+
+        case 0:
+            printf("Czy chesz zapisac firme przed wyjsciem? [1/0]\n");
+            int e;
+            cin>>e;
+            e = sprawdz(0, 1, e);
+
+            if(e == 1)
+            {
+                string s;
+                printf("Podaj nazwe pliku do zapisu\n");
+                cin>>s;
+                zapisz_firme(s);
+            }
+
             break;
         }
         cout<<"\n\n";
@@ -204,14 +170,18 @@ void system_dzial(int x)
         cin>>z;
         z = sprawdz(0, 3, z);
         cout<<"\n\n";
+
         switch(z)
         {
         case 1:
             br = firma.return_branch(x);
+
             cout<<br<<"\n";
             printf("Wybierz pracownika poprzez wpisanie jego numeru do konsoli\n");
             cin>>y;
-            y = sprawdz(1, br.get_size(), y);
+            obszar = &br;
+            y = sprawdz(1, obszar -> get_size(), y);
+
             system_pracownik(x, y);
             break;
 
@@ -219,10 +189,11 @@ void system_dzial(int x)
             wczytaj_pracownika(x);
             break;
         case 3:
-            printf("Ilosc pracownikow\t%d\n", br.get_size());
-            printf("Przychody:\t\t%d zl\n", br.get_income());
-            printf("Straty:\t\t\t%d zl\n", br.get_outflow());
-            printf("Bilans:\t\t\t%d zl\n", br.get_income()-br.get_outflow());
+            obszar = &br;
+            printf("Ilosc pracownikow\t%d\n", obszar -> get_size());
+            printf("Przychody:\t\t%d zl\n", obszar -> get_income());
+            printf("Straty:\t\t\t%d zl\n", obszar -> get_outflow());
+            printf("Bilans:\t\t\t%d zl\n", obszar -> get_income()- obszar -> get_outflow());
             printf("\n");
             break;
         }
@@ -272,6 +243,7 @@ void system_pracownik(int x, int y)
 
         case 3:
             firma.fire_worker(x, y);
+            z = 0;
             break;
         }
 
@@ -282,37 +254,42 @@ void system_pracownik(int x, int y)
 void lista_dzialow()
 {
     Branch br("");
+
     cout<<"LISTA DZIALOW:\n";
-    for(int i = 1; i <= firma.get_size(); i++)
+    obszar = &firma;
+    for(int i = 1; i <= obszar -> get_size(); i++)
     {
         br = firma.return_branch(i);
+
         cout<<"\t"<<i<<". "<<br.get_name()<<"\n";
     }
 }
 
 void wypisz_raport()
 {
+    obszar = &firma;
     printf("Stan konta firmy:\t%d\n", firma.show_money());
-    printf("Miesieczne przychody:\t%d\n", firma.show_income());
-    printf("Miesieczne wydatki:\t%d\n", firma.show_outflow());
-    printf("Bilans:\t\t\t%d\n", firma.show_income()-firma.show_outflow());
-    printf("Liczba dzialow: \t%d\n", firma.get_size());
+    printf("Miesieczne przychody:\t%d\n", obszar -> get_income());
+    printf("Miesieczne wydatki:\t%d\n", obszar -> get_outflow());
+    printf("Bilans:\t\t\t%d\n", obszar -> get_income()- obszar -> get_outflow());
+    printf("Liczba dzialow: \t%d\n", obszar -> get_size());
     printf("Liczba pracownikow:\t%d\n", firma.get_workers_size());
 }
 
 void zapisz_raport()
 {
     string d;
-    d = data.get_date();
+    ti = &data;
+    d = ti -> show();
     std::fstream plik;
-
-    plik.open("Raport " +d + ".txt", std::ios::out);
+    obszar = &firma;
+    plik.open("Raport " + d + ".txt", std::ios::out);
     plik <<"STAN FIRMY\n\n";
     plik<<"Stan konta firmy:\t"<<firma.show_money()<<"\n";
-    plik<<"Miesieczne przychody:\t"<<firma.show_income()<<"\n";
-    plik<<"Miesieczne wydatki:\t"<<firma.show_outflow()<<"\n";
-    plik<<"Bilans:\t\t\t"<<firma.show_income()-firma.show_outflow()<<"\n";
-    plik<<"Liczba dzialow: \t"<<firma.get_size()<<"\n";
+    plik<<"Miesieczne przychody:\t"<<obszar -> get_income()<<"\n";
+    plik<<"Miesieczne wydatki:\t"<<obszar -> get_outflow()<<"\n";
+    plik<<"Bilans:\t\t\t"<<obszar -> get_income()- obszar -> get_outflow()<<"\n";
+    plik<<"Liczba dzialow: \t"<<obszar -> get_size()<<"\n";
     plik<<"Liczba pracownikow:\t"<<firma.get_workers_size()<<"\n";
     plik.close();
 }
@@ -341,12 +318,12 @@ void wczytaj_pracownika(int x)
 {
     string n, s, g, st, po;
     int a, wy, prz;
-
     gender gend;
     position pos;
 
     printf("Wpisz informacje o pracowniku\n");
     printf("Imie Nazwisko plec wiek stanowisko pozycje wyplate przychod\n");
+
     cin>>s>>n>>g>>a>>st>>po>>wy>>prz;
 
     if(g[0] == 'm')
@@ -389,29 +366,37 @@ void wczytaj_firme(string nazwa_pliku)
 {
 	string nazwa_firmy;
 	string nazwa_oddzialu;
+	string imie, nazwisko, plec, stanowisko, pozycja;
+    string s;
+    char z;
 	gender gend;
 	position pos;
 	int liczba_pracownikow;
-	string imie, nazwisko, plec, stanowisko, pozycja;
 	int wiek, wyplata, przychod;
 	int pieniadze_firmy;
-	string s;
 	int a, b, c;
 	int liczba_oddzialow;
-	char z;
 
 	std::ifstream plik;
     plik.open(nazwa_pliku + ".txt" );
+
+    if( plik.good() != true )
+    {
+        string wyjatek = "Brak pliku o podanej nazwie";
+        throw wyjatek;
+    }
+
     plik>>a>>z>>b>>z>>c;
 
-	//Date date(a, b, c);
     data.change(a, b, c);
+
 	getline(plik, s);
 	getline(plik, nazwa_firmy);
 	plik>>pieniadze_firmy;
 	getline(plik, s);
 
     firma.change(nazwa_firmy, pieniadze_firmy);
+
 	plik>>liczba_oddzialow;
 
 	for(int i = 1; i <= liczba_oddzialow; i++)
@@ -465,7 +450,6 @@ void wczytaj_firme(string nazwa_pliku)
             Employee prac(imie, nazwisko, gend, wiek, stanowisko, pos, wyplata, przychod);
             odzial.add_worker(prac);
         }
-
         firma.add_branch(odzial);
     }
 	plik.close();
